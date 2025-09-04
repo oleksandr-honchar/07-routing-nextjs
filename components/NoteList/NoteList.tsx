@@ -1,28 +1,16 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteNote } from "@/lib/api";
+"use client";
+
+import css from "./NoteList.module.css";
 import type { Note } from "@/types/note";
-import css from "@/components/NoteList/NoteList.module.css";
-import Link from "next/link";
 
-export interface NoteListProps {
+type NoteListProps = {
   notes: Note[];
-}
+  onNoteClick: (note: Note) => void;
+  onDeleteNote: (id: string) => void;
+  deletingNoteId: string | null;
+};
 
-export default function NoteList({ notes }: NoteListProps) {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (id: string) => deleteNote(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    },
-    onError: (err) => {
-      console.error("Failed to delete note", err);
-    },
-  });
-
-  if (!notes.length) return null;
-
+export default function NoteList({ notes, onNoteClick, onDeleteNote, deletingNoteId }: NoteListProps) {
   return (
     <ul className={css.list}>
       {notes.map((note) => (
@@ -30,14 +18,16 @@ export default function NoteList({ notes }: NoteListProps) {
           <h2 className={css.title}>{note.title}</h2>
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
-                  <span className={css.tag}>{note.tag}</span>
-                  <Link href={`/notes/${note.id}`} className={css.link}>View details</Link>
+            <span className={css.tag}>{note.tag}</span>
             <button
               className={css.button}
-              onClick={() => mutation.mutate(note.id)}
-              disabled={mutation.isPending}
+              onClick={() => onDeleteNote(note.id)}
+              disabled={deletingNoteId === note.id}
             >
-              {mutation.isPending ? "Deleting..." : "Delete"}
+              {deletingNoteId === note.id ? "Deleting..." : "Delete"}
+            </button>
+            <button className={css.button} onClick={() => onNoteClick(note)}>
+              View details
             </button>
           </div>
         </li>
