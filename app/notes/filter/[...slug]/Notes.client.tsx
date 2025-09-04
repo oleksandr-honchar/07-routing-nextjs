@@ -186,6 +186,7 @@ export default function Notes({ perPage, initialPage, initialSearch, initialTag 
 
   const handleCreateNote = (note: CreateNotePayload) => {
     createMutation.mutate(note);
+    setCreateModalOpen(false);
   };
 
   // Видалення нотатки

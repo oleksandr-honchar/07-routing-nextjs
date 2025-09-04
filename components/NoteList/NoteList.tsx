@@ -19,6 +19,9 @@ export default function NoteList({ notes, onNoteClick, onDeleteNote, deletingNot
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
+            <button className={css.viewbutton} onClick={() => onNoteClick(note)}>
+              View details
+            </button>
             <button
               className={css.button}
               onClick={() => onDeleteNote(note.id)}
@@ -26,9 +29,7 @@ export default function NoteList({ notes, onNoteClick, onDeleteNote, deletingNot
             >
               {deletingNoteId === note.id ? "Deleting..." : "Delete"}
             </button>
-            <button className={css.button} onClick={() => onNoteClick(note)}>
-              View details
-            </button>
+            
           </div>
         </li>
       ))}
