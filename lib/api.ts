@@ -3,6 +3,7 @@ import type { Note } from "../types/note";
 
 export type FetchNotesResponse = {
   notes: Note[];
+  total: number
   totalPages: number;
 };
 
@@ -10,15 +11,15 @@ export type FetchNotesParams = {
   page: number;
   perPage: number;
   search: string;
+  tag: string;
 };
 
 export type CreateNotePayload = {
   title: string;
   content: string;
-  tag: "Todo" | "Work" | "Personal" | "Meeting" | "Shopping";
+  tag: string;
 };
 
-// Базовий URL та токен для SSR і клієнта
 const API_URL = "https://notehub-public.goit.study/api";
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
@@ -34,8 +35,23 @@ export async function fetchNotes({
   page,
   perPage,
   search,
+  tag
 }: FetchNotesParams): Promise<FetchNotesResponse> {
-  const res = await api.get<FetchNotesResponse>("/notes", { params: { page, perPage, search } });
+  const params: Record<string, string | number> = { page, perPage };
+  if (search) params.search = search;
+  if (tag && tag.toLowerCase() !== "all") {
+    const tagMap: Record<string, string> = {
+      todo: "Todo",
+      work: "Work",
+      personal: "Personal",
+      meeting: "Meeting",
+      shopping: "Shopping",
+    };
+    const backendTag = tagMap[tag.toLowerCase()];
+    if (backendTag) params.tag = backendTag;
+  }
+  console.log("➡ API params:", params);
+  const res = await api.get<FetchNotesResponse>("/notes", { params });
   return res.data;
 }
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
+import Link from "next/link";
 import css from "@/components/NotesPage/NotesPage.module.css";
 import type { CreateNotePayload, FetchNotesResponse } from "@/lib/api";
 import { fetchNotes, createNote } from "@/lib/api";
@@ -16,26 +17,29 @@ type NotesProps = {
   perPage: number;
   initialPage: number;
   initialSearch: string;
+  initialTag: string;
 };
 
-export default function Notes({ perPage, initialPage, initialSearch }: NotesProps) {
+export default function Notes({ perPage, initialPage, initialSearch, initialTag }: NotesProps) {
   const [search, setSearch] = useState(initialSearch);
   const [debouncedSearch] = useDebounce(search, 500);
   const [page, setPage] = useState(initialPage);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [tag] = useState(initialTag);
 
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery<FetchNotesResponse, Error>({
-    queryKey: ["notes", page, debouncedSearch],
-    queryFn: () => fetchNotes({ page, perPage, search: debouncedSearch }),
+    queryKey: ["notes", page, debouncedSearch, tag],
+    queryFn: () =>
+      fetchNotes({
+        page,
+        perPage,
+        search: debouncedSearch,
+        tag: tag === "all" ? "" : tag,
+      }),
     placeholderData: keepPreviousData,
   });
-    
-    console.log("Notes Query Data:", data);
-console.log("Notes Query TotalPages:", data?.totalPages);
-console.log("Current Page:", page, "Search:", debouncedSearch);
-console.log("isLoading:", isLoading, "isError:", isError);
 
   const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 1;
@@ -64,8 +68,7 @@ console.log("isLoading:", isLoading, "isError:", isError);
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox value={search} onChange={handleSearchChange} />
-              {totalPages > 1 && (
-                  
+        {totalPages > 1 && (
           <Pagination
             totalPages={totalPages}
             activePage={page}
@@ -80,7 +83,9 @@ console.log("isLoading:", isLoading, "isError:", isError);
       {isLoading && <p>Loading...</p>}
       {isError && <p>Error loading notes</p>}
 
-      {notes.length > 0 && <NoteList notes={notes} />}
+      {notes.length > 0 && (
+        <NoteList notes={notes} />
+      )}
 
       {isModalOpen && (
         <Modal onClose={() => setModalOpen(false)}>
