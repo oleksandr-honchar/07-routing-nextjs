@@ -19,7 +19,7 @@ export default function SidebarNotes() {
           <li key={tag.slug} className={css.menuItem}>
             <Link
               href={`/notes/filter/${tag.slug === "all" ? "All" : tag.slug}`}
-              scroll={false} // паралельний маршрут, не перезавантажує всю сторінку
+              scroll={false}
               className={css.menuLink}
             >
               {tag.name}

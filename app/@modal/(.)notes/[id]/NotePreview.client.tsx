@@ -1,33 +1,32 @@
-"use client";
+"use client"
 
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import * as React from "react";
-import { fetchNoteById } from "@/lib/api";
-import Modal from "@/components/Modal/Modal";
-import css from "./NotePreview.module.css";
+import { useQuery } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
+import * as React from "react"
+import { fetchNoteById } from "@/lib/api"
+import Modal from "@/components/Modal/Modal"
+import css from "./NotePreview.module.css"
 
-type Props = {
-  params: Promise<{ id: string }>;
-};
+interface NotePreviewProps {
+  id: string
+}
 
-export default function NotePreview({ params }: Props) {
-  const router = useRouter();
-  const { id } = React.use(params); // ✅ unwrap promise with React.use()
+export default function NotePreview({ id }: NotePreviewProps) {
+  const router = useRouter()
 
   const { data: note, isLoading, isError } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
-  });
+  })
 
-  const handleClose = () => router.back();
+  const handleClose = () => router.back()
 
   if (isLoading) {
-    return <Modal onClose={handleClose}>Loading...</Modal>;
+    return <Modal onClose={handleClose}>Loading...</Modal>
   }
 
   if (isError || !note) {
-    return <Modal onClose={handleClose}>Error loading note</Modal>;
+    return <Modal onClose={handleClose}>Error loading note</Modal>
   }
 
   return (
@@ -53,5 +52,5 @@ export default function NotePreview({ params }: Props) {
         </div>
       </div>
     </Modal>
-  );
+  )
 }
