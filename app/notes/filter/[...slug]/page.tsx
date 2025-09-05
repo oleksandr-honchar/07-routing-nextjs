@@ -1,7 +1,7 @@
 
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query";
 import Notes from "./Notes.client";
-import SidebarNotes from "@/app/notes/filter/@sidebar/SidebarNotes";
+import SidebarNotes from "@/app/notes/filter/@sidebar/default";
 import { fetchNotes } from "@/lib/api";
 
 type Props = {
