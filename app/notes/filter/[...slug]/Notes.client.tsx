@@ -56,6 +56,7 @@ export default function Notes({ tag }: NotesProps) {
 
   const handleCreateNote = (note: CreateNotePayload) => {
     createMutation.mutate(note);
+    setCreateModalOpen(false);
   };
 
   const deleteMutation = useMutation({
