@@ -3,7 +3,6 @@ import type { Note } from "../types/note";
 
 export type FetchNotesResponse = {
   notes: Note[];
-  total: number
   totalPages: number;
 };
 

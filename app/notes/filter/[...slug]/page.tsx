@@ -5,12 +5,12 @@ import SidebarNotes from "@/app/notes/filter/@sidebar/default";
 import { fetchNotes } from "@/lib/api";
 
 type Props = {
-  params: { slug?: string[] };
+  params: Promise<{ slug: string[] }>;
 };
 
 export default async function FilteredNotesPage({ params }: Props) {
-  const slug = params.slug?.[0];
-  const tag = slug?.toLowerCase() === "all" ? "" : slug ?? "";
+  const { slug } = await params;
+  const tag = slug?.[0]?.toLowerCase() === "all" ? "" : slug?.[0] ?? "";
 
   const perPage = 12;
   const initialPage = 1;
@@ -30,16 +30,9 @@ export default async function FilteredNotesPage({ params }: Props) {
 
   return (
     <div style={{ display: "flex", gap: "2rem" }}>
-
-      <SidebarNotes />
-
-
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Notes
-          perPage={perPage}
-          initialPage={initialPage}
-          initialSearch=""
-          initialTag={tag}
+          tag={tag}
         />
       </HydrationBoundary>
     </div>
